@@ -1,0 +1,37 @@
+## Some code that we did not use. 
+
+guest_authors = []
+author_set = set(authors)
+for author_combination in multiple_authors:
+    for author in author_combination:
+        author = author.strip()
+        if author not in author_set:
+            guest_authors.append(author)
+            
+print("Unique guest authors without cleanup:", len(set(guest_authors)))
+
+#Clean up guest authors (remove cities and job titles)
+#We can assume, single names (no space) are not persons.
+guest_authors_no_city = []
+for guest_author in set(guest_authors):
+    if len(guest_author.split(' '))>1:
+        guest_authors_no_city.append(guest_author)
+
+guest_authors = guest_authors_no_city
+print("Unique guest authors with no whitespace cleanup:", len(set(guest_authors)))
+
+#Now, remove authors which are not names.
+not_names = ['Ritzau', 'Ekstra', 'redaktør', 'Advokat', 'New', 'redaktionschef', 'ansv.']
+guest_authors_names_only = []
+for guest_author in guest_authors:
+    a_name = True
+    names = guest_author.split(' ')
+    for i in names:
+        if i.strip() in not_names:
+            a_name = False
+    
+    if a_name:
+        guest_authors_names_only.append(guest_author)
+
+guest_authors = guest_authors_names_only
+print("Unique guest authors without wrong names:", len(set(guest_authors))) 
