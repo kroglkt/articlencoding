@@ -22,7 +22,13 @@ def get_bt_content(url):
     intro_html = soup.find_all('p', class_="article-summary")
     body_html = soup.find_all(class_="article-content")[0].find_all(text=True, recursive=False)
 
-    temp_intro = intro_html[0].text
+    if not intro_html:
+        intro_html = soup.find_all('p', class_="article-summary")
+
+    if intro_html:
+        temp_intro = intro_html[0].text
+    else:
+        temp_intro = ''
     body = temp_intro + ' '.join(body_html)
     header = header_html[0].text
 

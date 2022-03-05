@@ -32,6 +32,7 @@ class DomainClasses:
         self.by_ = by_
         
         self.use_soup_body = False
+        self.remove_author = False
 
 def element_present(driver, classname, by_):
     if len(driver.find_elements(by_, classname))>0:
@@ -57,12 +58,23 @@ def isolate_authors(element):
     a_string = [x.text.title() for x in element]
     return '|'.join(a_string)
 
+def remove_author_from_start(text, author):
+    reg_author = re.compile(re.escape(author), re.IGNORECASE)
+    if not reg_author.search(text[:100]):
+        return text
+
+    split = text.split('\n')
+    for i, s in enumerate(split):
+        if reg_author.search(s):
+            return '\n'.join(split[i+1:])
+            
+
 def who_is_author(authors):
     #Remove non-names from author list, if multiple authors.
     names = []
     not_names = []
     for name in authors:
-        if any(ele in name for ele in author_filter):
+        if any(ele.lower() in name.lower() for ele in author_filter):
             not_names.append(name)
         elif len(name.split()) > 1:
             names.append(name)
@@ -100,8 +112,14 @@ def get_content(url):
         b = b.text
     else:
         b = soup_text(driver, domain.body)
+
+    if domain.intro != 'NONE':
+        i = driver.find_element(By.CLASS_NAME, domain.intro)
+        i = i.text
+    else:
+        i = ''
+
         
-    i = driver.find_element(By.CLASS_NAME, domain.intro)
     h = driver.find_element(By.CLASS_NAME, domain.header)
 
     if element_present(driver, domain.author, domain.by_):
@@ -113,21 +131,25 @@ def get_content(url):
     else:
         print(url, "No author!")
         a = "Unknown"
+    if a == '':
+        a = soup_text(driver, domain.author)
+
     
     h = h.text
-    i = i.text
     a = isolate_authors(a)
-
     a = a.strip()
-    a = list(filter(None, re.split('\n|\||•|,',a))) #Split authors
+
+    if domain.remove_author:
+        b = remove_author_from_start(b, a)
+    
+    a = list(filter(None, re.split('\n|\||•|,|&',a))) #Split authors
+
     if len(a) > 1:
         a = who_is_author(a)
     else:
         a = a[0].title()
-    
-    driver.quit()
 
-    
+    driver.quit()
     
     return h.strip(), i.strip()+"\n"+b.strip(), a
 
@@ -141,7 +163,10 @@ domains = {
                                          'byline-authors', 'byline-container','error-wrap',
                                       'Beklager! – der er sket en fejl',
                                       by_=By.ID),
+    'www.bt.dk' : DomainClasses('article-content', "article-title", "NONE",
+                                "author-name", 'author-byline', 'container-404', '404 - Siden ikke fundet'),
     }
 
 domains['ekstrabladet.dk'].use_soup_body = True
-
+domains['www.bt.dk'].remove_author = True
+domains['www.bt.dk'].use_soup_body = True
