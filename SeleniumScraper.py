@@ -3,6 +3,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urlparse
 import bs4
 import re
@@ -103,6 +105,20 @@ def get_content(url):
 
     domain = domains[urlparse(url).netloc]
 
+    fb = False
+
+    try:
+        WebDriverWait(driver,10).until(
+            lambda driver: driver.find_elements(By.CLASS_NAME,domain.body) or driver.find_elements(By.CLASS_NAME,domain._404))
+
+        if not element_present(driver, domain._404, By.CLASS_NAME):
+            WebDriverWait(driver,10).until(
+                lambda driver: driver.find_elements(domain.by_,domain.author) or driver.find_elements(domain.by_,domain.author_fb))
+        
+    except:
+        print(url, " took too long to load...")
+        return '404','404','404'
+
     if is_404(driver, domain):
         driver.quit()
         return '404', '404', '404'
@@ -122,17 +138,31 @@ def get_content(url):
         
     h = driver.find_element(By.CLASS_NAME, domain.header)
 
+
+    #Find author.....
     if element_present(driver, domain.author, domain.by_):
         a = driver.find_elements(domain.by_, domain.author)
     elif domain.author_fb == 'NONE':
             a = 'Unknown'
     elif element_present(driver, domain.author_fb, domain.by_):
         a = driver.find_elements(domain.by_, domain.author_fb)
+        fb = True
     else:
         print(url, "No author!")
         a = "Unknown"
-    if a == '':
-        a = soup_text(driver, domain.author)
+
+    if type(a) == list:
+        if len(a) == 1 and a[0].text == '':
+            if not fb:
+                a = soup_text(driver, domain.author)
+            else:
+                a = soup_text(driver, domain.author_fb)
+    elif type(a) != str:
+        if a.text == '':
+            if not fb:
+                a = soup_text(driver, domain.author)
+            else:
+                a = soup_text(driver, domain.author_fb)
 
     
     h = h.text

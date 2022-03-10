@@ -71,9 +71,9 @@ def bt_multiple_authors():
     url = 'https://www.bt.dk/motion/se-traeningen-du-skal-lave-hvis-du-er-loeber'
     h,b,a = SeleniumScraper.get_content(url)
 
-    assert a == ['JO BRAND ', ' CHRISTINA BØLLING'], a
+    assert a == ['Jo Brand ', ' Christina Bølling'], a
     assert h == 'Se træningen du skal lave, hvis du er løber', h
-    assert len(b) == 3459, len(b)
+    assert len(b) == 3484, len(b)
 
 def bt_404():
     url = 'https://www.bt.dk/egu'
@@ -83,9 +83,20 @@ def bt_404():
     assert h == '404', h
     assert b == '404', b
 
+def bt_bad_author():
+    url = 'https://www.bt.dk/samfund/lotto-vinder-vil-dele-pengene-med-familie-og-venner-listen-skal-lige-revideres'
+    h,b,a = SeleniumScraper.get_content(url)
+
+    assert a == 'Kicki Søs Bengtsen', a
+    assert len(b) == 284, len(b)
+    assert h == "Lotto-vinder vil dele pengene med familie og venner: 'Listen skal lige revideres'", h
+    
+
 
 
 for i in range(3):
+    print("ITERATION", i)
+    print()
     berlingske_multiple_authors()
     berlingske_single_author_mail()
     berlingske_single_author()
@@ -96,10 +107,11 @@ for i in range(3):
     eb_single_author()
     eb_bad_authors()
     eb_404()
-    print("Passed BT")
+    print("Passed EB")
 
     bt_single_author()
     bt_multiple_authors()
+    bt_bad_author()
     bt_404()
     print("Passed BT")
 
