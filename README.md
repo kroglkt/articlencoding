@@ -26,4 +26,4 @@ Make shit work
 Shit didn't work
 
 # Conclusion
-
+Git gut
