@@ -12,3 +12,11 @@ The data used is not publicly available.
 
 ## Headline generation
 
+# Implementation
+Make shit work
+
+# Evaluation
+Shit didn't work
+
+# Conclusion
+
