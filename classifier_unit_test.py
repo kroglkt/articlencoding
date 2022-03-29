@@ -3,7 +3,14 @@ from sklearn.metrics import *
 from sklearn.dummy import DummyClassifier
 from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
+from sklearn.inspection import permutation_importance
 from matplotlib import pyplot as plt
+
+def permutate(clf, X_train, y_train):
+    print("Perfoming permutation importance...")
+    result = permutation_importance(clf, X_train, y_train)
+    print("Permutation imporance done! Note, that vector features are not accounted for. Raw importances returned.")
+    return result
 
 def ht(pred, dum):
     #higher than
@@ -27,11 +34,15 @@ def fpr_tpr(classifier, X_train, X_test, y_train, y_test):
 
     return fpr, tpr
 
-def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most_frequent", give_roc=False):
+def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most_frequent",
+                    give_roc=False, give_importance=False):
     '''Takes preprocessed data as input, categorized labels
     strategy: DummyClassifier strategy,
     give_roc: output tpr, fpr? Takes longer time
+    give_importances: output feature importances? Takes a lot longer.
     Is give_roc enabled, the function will return tpr, fpr for classifier and dummy.'''
+
+    output = {}
 
     if not check_fitted(classifier):
         print("Training model...")
@@ -65,12 +76,23 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
     print(f"ROC AUC: {auc:.2f}\t\t\tDummy: {dum_auc:.2f}\t{ht(auc, dum_auc)}")
 
     if give_roc:
-        print("Producing ROC...")
         fpr, tpr = fpr_tpr(classifier, X_train, X_test, y_train, y_test)
         dum_fpr, dum_tpr = fpr_tpr(dum, X_train, X_test, y_train, y_test)
-        print("ROC produced. Thanks for waiting. fpr, tpr, dum_tpr, dum_fpr outputted.")
 
-        return fpr, tpr, dum_tpr, dum_fpr
+        output['tpr'] = tpr
+        output['fpr'] = fpr
+        output['dum_tpr'] = dum_tpr
+        output['dum_fpr'] = dum_fpr
+
+    if give_importance:
+        importances = permutate(classifier, X_train, y_train)
+        output['importances_mean'] = importances.importances_mean
+        output['importances_std'] = importances.importances_std
+    
+    print("\nOutput keys:")
+    for i in output.keys():
+        print(i)
+    return output
 
     
     
@@ -83,7 +105,7 @@ if __name__ == "__main__":
     X,y = iris.data, iris.target
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
     clf = LogisticRegression()
-    pr, dum_pr = test_classifier(clf, X_train, X_test, y_train, y_test, give_roc=True)
+    output = test_classifier(clf, X_train, X_test, y_train, y_test, give_roc=True, give_importance=True)
     
 
 
