@@ -1,14 +1,12 @@
 from matplotlib import pyplot as plt
 import numpy as np
-import seaborn as sns
 import pandas as pd
 from gensim.corpora import Dictionary
 from gensim.models.ldamulticore import LdaModel
 from gensim.models import CoherenceModel
 from sklearn.model_selection import train_test_split
 import os, re
-
-#Courtesy to user12446118 on StackOverflow :-)
+import pickle
 
 with open('../function_words/funktionsord.txt', 'r', encoding='utf-8') as f:
     stop_words = f.readlines()
@@ -51,11 +49,16 @@ def load_corpus():
     print("Loaded!")
     return dataframe
 
-def jaccard_similarity(topic_1, topic_2):
-    intersection = set(topic_1).intersection(set(topic_2))
-    union = set(topic_1).union(set(topic_2))
-                    
-    return float(len(intersection))/float(len(union))
+def create_lda_dictionary(docs):
+    dictionary = Dictionary(docs)
+    #Remove words that occur in less than 20 documents and more than 10% of all documents
+    dictionary.filter_extremes(no_below=20, no_above=0.1)
+    print("Creating dictionary...")
+    corpus = [dictionary.doc2bow(doc) for doc in docs]
+    print("Number of unique tokens:", len(dictionary))
+    print("Number of documents:", len(corpus))
+    return dictionary, corpus
+
 
 def main():
     data = load_corpus()
@@ -66,13 +69,14 @@ def main():
                                                         random_state=42, stratify=authors)
 
     print("Tokenizing...")
-    corpus = tokenize_docs_for_lda(train_X)
+    docs = tokenize_docs_for_lda(train_X)
     print("Tokenized!")
 
-    dirichlet_dict = Dictionary(corpus)
-    bow_corpus = [dirichlet_dict.doc2bow(text) for text in corpus]
+    dictionary, corpus = create_lda_dictionary(docs)
+    assert len(dictionary) > 0, "Oh no! No unique words... You need more text!"
 
-    num_topics = list(range(8,20))
+
+    num_topics = list(range(20,30))
     num_keywords = len(num_topics)
 
     LDA_models = {}
@@ -80,24 +84,36 @@ def main():
 
     coherences = []
 
+    _ = dictionary[0]
+
     for i in num_topics:
         print("Training model with num topic", i)
-        LDA_model = LdaModel(corpus=bow_corpus,
-                                 id2word=dirichlet_dict,
-                                 num_topics=i,
-                                 update_every=1,
-                                 chunksize=len(bow_corpus),
-                                 passes=20,
-                                 alpha='auto',
-                                 random_state=42)
+        id2word = dictionary.id2token
+        model = LdaModel(corpus=corpus,
+                        id2word=id2word,
+                        chunksize=2000,
+                        alpha='auto',
+                        eta='auto',
+                        iterations=400, #400
+                        num_topics=i,
+                        passes=20, #20
+                        minimum_probability=0.0,
+                        eval_every=5)
 
         coherence_model = CoherenceModel(
-            model = LDA_model, texts=corpus, dictionary=dirichlet_dict, coherence='c_v')
+            model = model, texts=docs, dictionary=dictionary, coherence='c_v')
 
         coherence = coherence_model.get_coherence()
         coherences.append((i, coherence))
 
     print(coherences)
+    x = [x[1] for x in coherences]
+    topics = [x[0] for x in coherences]
+    plt.plot(topics, x)
+    plt.show()
+
+    with open("coherences.dat", 'wb') as f:
+        pickle.dump(coherences, f)
 
 if __name__ == '__main__':
-    main()
+    var = main()
