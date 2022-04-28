@@ -67,7 +67,7 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
     f1 = f1_score(y_test, preds, average='weighted')
     dum_f1 = f1_score(y_test, dum_preds, average='weighted')
     
-    if len(set(y_test)==2):
+    if len(set(y_test))==2:
         auc = roc_auc_score(y_test, preds_prob[:,1])
         dum_auc = roc_auc_score(y_test, dum_probs[:,1])
     else:
