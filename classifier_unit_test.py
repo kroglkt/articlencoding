@@ -8,6 +8,11 @@ from matplotlib import pyplot as plt
 
 def permutate(clf, X_train, y_train):
     print("Perfoming permutation importance...")
+    if type(X_train) != np.ndarray:
+        X_train = X_train.toarray()
+    if type(y_train) != np.ndarray:
+        y_train = y_train.toarray()
+
     result = permutation_importance(clf, X_train, y_train)
     print("Permutation imporance done! Note, that vector features are not accounted for. Raw importances returned.")
     return result
@@ -30,7 +35,11 @@ def fpr_tpr(classifier, X_train, X_test, y_train, y_test):
     clf = OneVsRestClassifier(classifier)
 
     y_score = clf.fit(X_train, y_train).predict_proba(X_test)
-    fpr, tpr, _ = roc_curve(y_test.ravel(), y_score.ravel())
+    print(y_test.ravel().shape, y_score.ravel().shape)
+    if y_test.ravel().shape == y_score.ravel().shape:
+        fpr, tpr, _ = roc_curve(y_test.ravel(), y_score.ravel())
+    else:
+        fpr, tpr, _ = roc_curve(y_test.ravel(), y_score[:,0])
 
     return fpr, tpr
 
