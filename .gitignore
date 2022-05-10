@@ -5,6 +5,8 @@ __pycache__/
 *.json
 *.zip
 *.h5
+*.dat
+*.npy
 
 headers.txt
 
