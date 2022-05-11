@@ -7,14 +7,13 @@ from sklearn.inspection import permutation_importance
 from matplotlib import pyplot as plt
 
 def permutate(clf, X_train, y_train):
-    print("Perfoming permutation importance...")
+    print("Perfoming *raw* permutation importance...")
     if type(X_train) != np.ndarray:
         X_train = X_train.toarray()
     if type(y_train) != np.ndarray:
         y_train = y_train.toarray()
 
     result = permutation_importance(clf, X_train, y_train)
-    print("Permutation imporance done! Note, that vector features are not accounted for. Raw importances returned.")
     return result
 
 def ht(pred, dum):
@@ -28,23 +27,17 @@ def ht(pred, dum):
 def check_fitted(clf): 
     return hasattr(clf, "classes_")
 
-def fpr_tpr(classifier, X_train, X_test, y_train, y_test):
-    y_train = label_binarize(y_train, classes=np.unique(y_train))
+def fpr_tpr(preds_proba, y_test, name=None):
     y_test = label_binarize(y_test, classes=np.unique(y_test))
-    
-    clf = OneVsRestClassifier(classifier)
 
-    y_score = clf.fit(X_train, y_train).predict_proba(X_test)
-    print(y_test.ravel().shape, y_score.ravel().shape)
-    if y_test.ravel().shape == y_score.ravel().shape:
-        fpr, tpr, _ = roc_curve(y_test.ravel(), y_score.ravel())
-    else:
-        fpr, tpr, _ = roc_curve(y_test.ravel(), y_score[:,0])
+    fpr, tpr, _ = roc_curve(y_test.ravel(), preds_proba.ravel())
+
+    print(f"ROC AUC control for {name}: {auc(fpr, tpr):.2f}")
 
     return fpr, tpr
 
 def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most_frequent",
-                    give_roc=False, give_importance=False):
+                    give_roc=True, give_importance=False, model_name=None):
     '''Takes preprocessed data as input, categorized labels
     strategy: DummyClassifier strategy,
     give_roc: output tpr, fpr? Takes longer time
@@ -75,6 +68,10 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
     dum_bal_accuracy = balanced_accuracy_score(y_test, dum_preds)
     f1 = f1_score(y_test, preds, average='weighted')
     dum_f1 = f1_score(y_test, dum_preds, average='weighted')
+    top_k = top_k_accuracy_score(y_test, preds_prob, k=5)
+    dum_top_k = top_k_accuracy_score(y_test, dum_probs)
+    cohen = cohen_kappa_score(y_test, preds)
+    dum_cohen = cohen_kappa_score(y_test, dum_preds)
     
     if len(set(y_test))==2:
         auc = roc_auc_score(y_test, preds_prob[:,1])
@@ -83,15 +80,38 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
         auc = roc_auc_score(y_test, preds_prob, multi_class='ovr')
         dum_auc = roc_auc_score(y_test, dum_probs, multi_class='ovr')
 
+    print('-'*10)
     print(f"Correctly predicted {correct} of {len(preds)}\tDummy: {dum_correct} of {len(preds)}\t{ht(correct, dum_correct)}")
     print(f"Accuracy: {accuracy:.2f}\t\t\tDummy: {dum_accuracy:.2f}\t{ht(accuracy, dum_accuracy)}")
     print(f"Balanced accuracy: {bal_accuracy:.2f}\t\tDummy: {dum_bal_accuracy:.2f}\t{ht(bal_accuracy, dum_bal_accuracy)}")
+    print(f"TOP 5 accuracy: {top_k:.2f}\t\tDummy: {dum_top_k:.2f}\t{ht(top_k, dum_top_k)}")
     print(f"F1 score: {f1:.2f}\t\t\tDummy: {dum_f1:.2f}\t{ht(f1, dum_f1)}")
+    print(f"Cohen's Kappa: {cohen:.2f}\t\tDummy: {dum_cohen:.2f}\t{ht(cohen, dum_cohen)}")
     print(f"ROC AUC: {auc:.2f}\t\t\tDummy: {dum_auc:.2f}\t{ht(auc, dum_auc)}")
+    print('-'*10)
+
+    metrics = dict()
+    metrics['correct'] = correct
+    metrics['accuracy'] = accuracy
+    metrics['bal_accuracy'] = bal_accuracy
+    metrics['f1'] = f1
+    metrics['auc'] = auc
+    metrics['top5_accuracy'] = top_k
+    metrics['cohen'] = cohen
+
+    dum_metrics = dict()
+    dum_metrics['correct'] = dum_correct
+    dum_metrics['accuracy'] = dum_accuracy
+    dum_metrics['bal_accuracy'] = dum_bal_accuracy
+    dum_metrics['f1'] = dum_f1
+    dum_metrics['auc'] = dum_auc
+    dum_metrics['top5_accuracy'] = dum_top_k
+    dum_metrics['cohen'] = dum_cohen
+
 
     if give_roc:
-        fpr, tpr = fpr_tpr(classifier, X_train, X_test, y_train, y_test)
-        dum_fpr, dum_tpr = fpr_tpr(dum, X_train, X_test, y_train, y_test)
+        fpr, tpr = fpr_tpr(preds_prob, y_test, name=str(classifier))
+        dum_fpr, dum_tpr = fpr_tpr(dum_probs, y_test, name="Dummy")
 
         output['tpr'] = tpr
         output['fpr'] = fpr
@@ -102,13 +122,19 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
         importances = permutate(classifier, X_train, y_train)
         output['importances_mean'] = importances.importances_mean
         output['importances_std'] = importances.importances_std
+
+    if model_name:
+        output['name'] = model_name
     
+    output['model_type'] = str(classifier)
     output['preds'] = preds
     output['preds_proba'] = preds_prob
     output['dum_preds'] = dum_preds
     output['dum_preds_proba'] = dum_probs
     output['cnf_matrix'] = confusion_matrix(y_test, preds)
     output['dum_cnf_matrix'] = confusion_matrix(y_test, dum_preds)
+    output['metrics'] = metrics
+    output['dum_metrics'] = dum_metrics
     
     print("\nOutput keys:")
     for i in output.keys():
