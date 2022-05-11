@@ -103,6 +103,13 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
         output['importances_mean'] = importances.importances_mean
         output['importances_std'] = importances.importances_std
     
+    output['preds'] = preds
+    output['preds_proba'] = preds_prob
+    output['dum_preds'] = dum_preds
+    output['dum_preds_proba'] = dum_probs
+    output['cnf_matrix'] = confusion_matrix(y_test, preds)
+    output['dum_cnf_matrix'] = confusion_matrix(y_test, dum_preds)
+    
     print("\nOutput keys:")
     for i in output.keys():
         print(i)
