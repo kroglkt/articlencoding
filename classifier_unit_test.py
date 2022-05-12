@@ -127,6 +127,7 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
         output['name'] = model_name
     
     output['model_type'] = str(classifier)
+    output['fedtet_estimator'] = classifier
     output['preds'] = preds
     output['preds_proba'] = preds_prob
     output['dum_preds'] = dum_preds
