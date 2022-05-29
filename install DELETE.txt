@@ -1,1 +1,0 @@
-pip install numpy pandas tqdm nltk sklearn lexicalrichness matplotlib spacy scipy gensim

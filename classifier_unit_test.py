@@ -5,6 +5,8 @@ from sklearn.preprocessing import label_binarize
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.inspection import permutation_importance
 from matplotlib import pyplot as plt
+import time
+import datetime
 
 def permutate(clf, X_train, y_train):
     print("Perfoming *raw* permutation importance...")
@@ -43,7 +45,8 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
     give_roc: output tpr, fpr? Takes longer time
     give_importances: output feature importances? Takes a lot longer.
     Is give_roc enabled, the function will return tpr, fpr for classifier and dummy.'''
-
+    
+    og_time = time.time()
     output = {}
 
     if not check_fitted(classifier):
@@ -137,9 +140,13 @@ def test_classifier(classifier, X_train, X_test, y_train, y_test, strategy="most
     output['metrics'] = metrics
     output['dum_metrics'] = dum_metrics
     
-    print("\nOutput keys:")
-    for i in output.keys():
-        print(i)
+    # print("\nOutput keys:")
+    # for i in output.keys():
+    #     print(i)
+    process_time = str(datetime.timedelta(seconds=time.time()-og_time))
+    print("Process time:", process_time)
+    output['proctime'] = process_time
+    
     return output
 
     
