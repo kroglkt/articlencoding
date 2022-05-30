@@ -1,0 +1,67 @@
+start time: 1653377226.2638445
+
+epoch 0, batch 20, logs: {'loss' : 2.6788387189941487}
+epoch 0, batch 40, logs: {'loss' : 2.667000579833984}
+epoch 0, batch 60, logs: {'loss' : 2.653730773925781}
+epoch 0, batch 80, logs: {'loss' : 2.6907920837402344}
+epoch 0, batch 20, logs: {'loss' : 2.686107177734375}
+
+
+epoch 1, batch 120, logs: {'loss': 2.717049407958984, 'loss_val': 2.6533637046813965}
+
+epoch 2, batch 220, logs: {'loss': 2.6837087631225587, 'loss_val': 2.618747472763061}
+epoch 2, batch 240, logs: {'loss': 2.6392805099487306, 'loss_val': 2.618747472763061}
+epoch 2, batch 260, logs: {'loss': 2.626323445638021, 'loss_val': 2.618747472763061}
+epoch 2, batch 280, logs: {'loss': 2.6245702743530273, 'loss_val': 2.618747472763061}
+epoch 2, batch 220, logs: {'loss': 2.614993896484375, 'loss_val': 2.618747472763061}
+
+epoch 3, batch 260, logs: {'loss': 2.49571050008138, 'loss_val': 2.5858538150787354}
+epoch 3, batch 280, logs: {'loss': 2.516619110107422, 'loss_val': 2.5858538150787354}
+epoch 3, batch 220, logs: {'loss': 2.5207333374023437, 'loss_val': 2.5858538150787354}
+
+epoch 4, batch 000, logs: {'loss': 2.5207333374023437, 'loss_val': 2.55378794670105}
+
+epoch 5, batch 520, logs: {'loss': 2.4818166732788085, 'loss_val': 2.527705669403076}
+epoch 5, batch 540, logs: {'loss': 2.497075653076172, 'loss_val': 2.527705669403076}
+epoch 5, batch 560, logs: {'loss': 2.469995625813802, 'loss_val': 2.527705669403076}
+epoch 5, batch 580, logs: {'loss': 2.4674095153808593, 'loss_val': 2.527705669403076}
+epoch 5, batch 520, logs: {'loss': 2.5032254028320313, 'loss_val': 2.527705669403076}
+
+epoch 6, batch 620, logs: {'loss': 2.4421096801757813, 'loss_val': 2.5028018951416016}
+epoch 6, batch 640, logs: {'loss': 2.5056684494018553, 'loss_val': 2.5028018951416016}
+epoch 6, batch 660, logs: {'loss': 2.4278081258138022, 'loss_val': 2.5028018951416016}
+epoch 6, batch 680, logs: {'loss': 2.485670280456543, 'loss_val': 2.5028018951416016}
+epoch 6, batch 700, logs: {'loss': 2.4672967529296876, 'loss_val': 2.5028018951416016}
+
+epoch 7, batch 720, logs: {'loss': 2.540060615539551, 'loss_val': 2.480020523071289}
+epoch 7, batch 740, logs: {'loss': 2.534938621520996, 'loss_val': 2.480020523071289}
+
+epoch 8, batch 820, logs: {'loss': 2.3422924041748048, 'loss_val': 2.4575366973876953}
+epoch 8, batch 840, logs: {'loss': 2.4121892929007147, 'loss_val': 2.4575366973876953}
+epoch 8, batch 860, logs: {'loss': 2.4460375467936197, 'loss_val': 2.4575366973876953}
+epoch 8, batch 880, logs: {'loss': 2.440985679626465, 'loss_val': 2.4575366973876953}
+epoch 8, batch 800, logs: {'loss': 2.44520263271875, 'loss_val': 2.4575366973876953}
+
+epoch 9, batch 000, logs: {'loss': 2.44520263271875, 'loss_val': 2.4362668991088867}
+
+epoch 10, batch 1020, logs: {'loss': 2.445167350769043, 'loss_val': 2.4169557094573975}
+epoch 10, batch 840, logs: {'loss': 2.4262800216674805, 'loss_val': 2.4169557094573975}
+epoch 10, batch 860, logs: {'loss': 2.4557540893554686, 'loss_val': 2.4169557094573975}
+epoch 10, batch 880, logs: {'loss': 2.461195182800293, 'loss_val': 2.4169557094573975}
+epoch 10, batch 800, logs: {'loss': 2.4389048767089845, 'loss_val': 2.4169557094573975}
+
+epoch 11, batch 1020, logs: {'loss': 2.4396663665771485, 'loss_val': 2.4011807441711426}
+epoch 11, batch 840, logs: {'loss': 2.4599328994750977, 'loss_val': 2.4011807441711426}
+epoch 11, batch 860, logs: {'loss': 2.457257843017578, 'loss_val': 2.4011807441711426}
+epoch 11, batch 880, logs: {'loss': 2.4848108291625977, 'loss_val': 2.4011807441711426}
+epoch 11, batch 800, logs: {'loss': 2.460010986328125, 'loss_val': 2.4011807441711426}
+
+epoch 12, batch 000, logs: {'loss': 2.460010986328125, 'loss_val': 2.383920669555664}
+
+epoch 13, batch 1020, logs: {'loss': 2.42114372253418, 'loss_val': 2.370622396469116}
+epoch 13, batch 840, logs: {'loss': 2.446877098083496, 'loss_val': 2.370622396469116}
+epoch 13, batch 860, logs: {'loss': 2.434973398844401, 'loss_val': 2.370622396469116}
+epoch 13, batch 880, logs: {'loss': 2.4037309646606446, 'loss_val': 2.370622396469116}
+epoch 13, batch 800, logs: {'loss': 2.4167247009277344, 'loss_val': 2.370622396469116}
+
+epoch 14, batch 1420, logs: {'loss': 2.38112735748291, 'loss_val': 2.353543281555176}
