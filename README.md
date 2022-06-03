@@ -20,10 +20,10 @@ Newspaper attribution is, like AA, a multiclass classification problem. Here, th
 Headline generation is a task within in the field of text summarization in which the goal is to generate a headline for an input text. Text summarization has two main categories: extractive and abstractive. Extractive summarization revolves around extracting key sentences from a text and concatenating them, creating a shorter form of the given text. Abstractive summarization, on the contrary, relies on a deeper understanding of the text through, e.g. semantic representation and linguistic features, whereafter the input is retold with fewer words. We focus on abstractive summarization in our project.
 
 # Implementation
-Make shit work
+
 
 # Evaluation
-Shit didn't work
+
 
 # Conclusion
-Git gut
+
